@@ -1,0 +1,70 @@
+branches:
+  only:
+    - master
+
+skip_tags: true
+
+version: '{branch}-{build}'
+
+image: Visual Studio 2015
+
+environment:
+  APPVEYOR_SAVE_CACHE_ON_ERROR: 'true'
+  dist_name: $(APPVEYOR_PROJECT_NAME)-$(APPVEYOR_BUILD_NUMBER)
+  dist_exclude: |
+    '*.a'
+    '*.pyc'
+    '*.pyo'
+    mingw32/include
+    mingw32/lib/cv2
+    mingw32/lib/python*/test
+    mingw32/share/doc
+    mingw32/share/gtk-doc
+    mingw32/share/man
+    mingw32/share/OpenCV
+    mingw32/share/opencv*
+    usr/share/doc
+    usr/share/locale
+    usr/share/man
+    usr/share/vim
+
+clone_depth: 1
+
+cache: C:\msys64\var\cache\pacman\pkg
+
+init:
+  - cmd: |
+      # MSYS2's Bash needs the --login
+      set bash=C:\msys64\usr\bin\bash.exe --login
+
+      # Show detailed package statistics on pacman -S
+      echo [options]>> C:\msys64\etc\pacman.conf
+      echo VerbosePkgLists>> C:\msys64\etc\pacman.conf
+
+install:
+  - cmd: |
+      %bash% -c "pacman --noconfirm --noprogressbar -Syuu"
+      cd C:\msys64\home\appveyor
+      git clone --depth=1 https://github.com/exaile/python-gtk3-gst-sdk.git
+      git clone --depth=1 https://github.com/exaile/exaile.git
+
+build_script:
+  - cmd: |
+      cd exaile\tools\installer
+      %bash% -c "GTK_SDK_VERBOSE=1 ../../../python-gtk3-gst-sdk/win_installer/build_win32_sdk.sh"
+      %bash% -c "cd _build_root && time tar -caf ../sdk.tar.xz -X <(echo ""$dist_exclude"") *"
+
+after_build:
+  - cmd: move sdk.tar.xz "%APPVEYOR_BUILD_FOLDER%\%dist_name%.tar.xz"
+
+artifacts:
+  - path: $(dist_name).tar.xz
+    name: dist
+
+deploy:
+  provider: GitHub
+  release: $(dist_name)
+  description: ''
+  auth_token:
+    secure: WkMQKrOBLXdmgTJmcXbN33XDQXMq9zDSHroO7mJBi2+b9qPCbGtNzD1j7pwvn66/
+  artifact: dist
