@@ -52,6 +52,7 @@ build_script:
   - cmd: |
       set GTK_SDK_VERBOSE=1
       %bash% -lc "cd exaile/tools/installer && ../../../python-gtk3-gst-sdk/win_installer/build_win32_sdk.sh"
+      set XZ_OPT=--threads=0
       %bash% -lc "cd exaile/tools/installer/_build_root && time tar -caf ../sdk.tar.xz -X <(echo ""$dist_exclude"") *"
 
 after_build:
