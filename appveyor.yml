@@ -34,8 +34,8 @@ cache: C:\msys64\var\cache\pacman\pkg
 
 init:
   - cmd: |
-      REM MSYS2's Bash needs the --login
-      set bash=C:\msys64\usr\bin\bash.exe --login
+      REM When calling this, you must use --login (required by MSYS2)
+      set bash=C:\msys64\usr\bin\bash.exe
 
       REM Show detailed package statistics on pacman -S
       echo [options]>> C:\msys64\etc\pacman.conf
@@ -43,19 +43,19 @@ init:
 
 install:
   - cmd: |
-      %bash% -c "pacman --noconfirm --noprogressbar -Syuu"
+      %bash% -lc "pacman --noconfirm --noprogressbar -Syuu"
       cd C:\msys64\home\appveyor
       git clone --depth=1 https://github.com/exaile/python-gtk3-gst-sdk.git
       git clone --depth=1 https://github.com/exaile/exaile.git
 
 build_script:
   - cmd: |
-      cd exaile\tools\installer
-      %bash% -c "GTK_SDK_VERBOSE=1 ../../../python-gtk3-gst-sdk/win_installer/build_win32_sdk.sh"
-      %bash% -c "cd _build_root && time tar -caf ../sdk.tar.xz -X <(echo ""$dist_exclude"") *"
+      set GTK_SDK_VERBOSE=1
+      %bash% -lc "cd exaile/tools/installer && ../../../python-gtk3-gst-sdk/win_installer/build_win32_sdk.sh"
+      %bash% -lc "cd exaile/tools/installer_build_root && time tar -caf ../sdk.tar.xz -X <(echo ""$dist_exclude"") *"
 
 after_build:
-  - cmd: move sdk.tar.xz "%APPVEYOR_BUILD_FOLDER%\%dist_name%.tar.xz"
+  - cmd: move exaile\tools\installer\sdk.tar.xz "%APPVEYOR_BUILD_FOLDER%\%dist_name%.tar.xz"
 
 artifacts:
   - path: $(dist_name).tar.xz
