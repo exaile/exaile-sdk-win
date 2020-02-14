@@ -70,3 +70,6 @@ deploy:
   auth_token:
     secure: SIgbVNCx4ge9VT0J/0X8kovjreWVKJyWiquTLXmoUZItQk5aNr5jl1KNbOiTPdeu # exailebot's access token
   artifact: dist
+
+after_deploy:
+  - cmd:  %bash% -lc "pacman --noconfirm --noprogressbar -Sc"
