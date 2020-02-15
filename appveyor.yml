@@ -53,14 +53,13 @@ build_script:
       set GTK_SDK_VERBOSE=1
       %bash% -lc "cd exaile/tools/installer && ../../../python-gtk3-gst-sdk/win_installer/build_win32_sdk.sh"
       %bash% -lc "cd exaile/tools/installer && source project.config && pacman --root ""$PWD/_build_root"" --noconfirm -S --needed $TARGET_DOWNLOAD_PKGS"
-      set XZ_OPT=--threads=0
-      %bash% -lc "cd exaile/tools/installer/_build_root && time tar -caf ../sdk.tar.xz -X <(echo ""$dist_exclude"") * && ls -sh ../sdk.tar.xz"
+      %bash% -lc "cd exaile/tools/installer/_build_root && time tar -cf ../sdk.tar.zst -I 'zstd -17 -T0' -X <(echo ""$dist_exclude"") * && ls -sh ../sdk.tar.zst"
 
 after_build:
-  - cmd: move exaile\tools\installer\sdk.tar.xz "%APPVEYOR_BUILD_FOLDER%\%dist_name%.tar.xz"
+  - cmd: move exaile\tools\installer\sdk.tar.zst "%APPVEYOR_BUILD_FOLDER%\%dist_name%.tar.zst"
 
 artifacts:
-  - path: $(dist_name).tar.xz
+  - path: $(dist_name).tar.zst
     name: dist
 
 deploy:
