@@ -72,4 +72,4 @@ deploy:
 
 after_deploy:
   - cmd: |
-      %bash% -lc "pacman --noconfirm --noprogressbar -Sc"
+      %bash% -lc "pacman --root ""$PWD/exaile/tools/installer/_build_root"" --noconfirm --noprogressbar -Sc"
