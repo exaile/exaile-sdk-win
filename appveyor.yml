@@ -6,7 +6,7 @@ skip_tags: true
 
 version: '{branch}-{build}'
 
-image: Visual Studio 2015
+image: Visual Studio 2019
 
 environment:
   APPVEYOR_SAVE_CACHE_ON_ERROR: 'true'
