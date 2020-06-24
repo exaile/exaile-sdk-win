@@ -12,9 +12,9 @@ environment:
   APPVEYOR_SAVE_CACHE_ON_ERROR: 'true'
   dist_name: $(APPVEYOR_PROJECT_NAME)-$(APPVEYOR_BUILD_NUMBER)
   dist_exclude: |
-    '*.a'
-    '*.pyc'
-    '*.pyo'
+    *.a
+    *.pyc
+    *.pyo
     mingw32/include
     mingw32/lib/cv2
     mingw32/lib/python*/test
